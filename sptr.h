@@ -39,7 +39,7 @@ typedef struct { void* ptr; size_t size; char isf; } sptr;
     (sptr){p, size, 0}; \
 })
 #define sptr_at(type, sp, ind) \
-  (*((ind>=sp.size||ind<0)?fprintf(stderr,"%s:%i error: index out of the range\n",__FILE__,__LINE__),exit(1),((type*)sp.ptr):(((type*)sp.ptr)+ind)))
+  (*((ind>=sp.size||ind<0)?fprintf(stderr,"%s:%i error: index out of the range\n",__FILE__,__LINE__),exit(1),((type*)sp.ptr):(sp.isf)?fprintf(stderr,"%s:%i error: use after free\n",__FILE__,__LINE__),exit(1),((type*)sp.ptr):(((type*)sp.ptr)+ind)))
 #define sptr_free(sp) \
   do{if(sp.isf){fprintf(stderr,"%s:%i error: double free\n",__FILE__,__LINE__);exit(1);}sp.isf = 1;free(sp.ptr);}while(0)
 #endif
