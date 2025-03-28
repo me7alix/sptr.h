@@ -2,10 +2,11 @@
   sptr.h - A header-only library for safe dynamic memory management.
 
   This library provides smart pointers (sptr) that help detect memory 
-  errors such as out-of-bounds access and double free. In debug mode 
-  (default), sptr verifies index validity and tracks memory deallocation, 
-  reporting errors with file and line information. In RELEASE_MODE 
-  (enabled via #define), these checks are disabled for better performance.
+  errors such as out-of-bounds access, double free and use after free.
+  In debug mode (default), sptr verifies index validity and tracks 
+  memory deallocation, reporting errors with file and line information.
+  In RELEASE_MODE (enabled via #define), these checks are disabled 
+  for better performance.
 
   Usage:
     sptr my_array = sptr_alloc(int, 10);  // Allocate memory
