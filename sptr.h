@@ -58,7 +58,7 @@ typedef struct {
      fprintf(stderr, "%s:%i error: index out of the range\n", __FILE__, __LINE__), \
      exit(1), \
      ((type*)sp.ptr) \
-  : (*sp.isf) ? \
+  : (*sp.isf || !sp.isf) ? \
     fprintf(stderr,"%s:%i error: use after free\n", __FILE__, __LINE__), \
     exit(1), \
     ((type*)sp.ptr) \
@@ -67,7 +67,7 @@ typedef struct {
 
 #define sptr_free(sp) \
   do { \
-    if(*sp.isf){ \
+    if(*sp.isf || !sp.isf){ \
       fprintf(stderr, "%s:%i error: double free\n", __FILE__, __LINE__); \
       exit(1); \
     } \
