@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#define sptr_mat(type, sp, i, j) sptr_at(int, sptr_at(sptr, sp, i), j)
+#define sptr_mat(type, sp, i, j) sptr_at(type, sptr_at(sptr, sp, i), j)
 
 #ifdef RELEASE_MODE
 
