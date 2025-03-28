@@ -52,8 +52,8 @@ typedef struct {
     (sptr){p, size, isf}; \
 }) 
 
-#define sptr_at(type, sp, ind) \
-  (*((ind>=sp.size||ind<0) ? \
+#define sptr_at(type, sp, ind) ( \
+  *((ind>=sp.size||ind<0) ? \
      fprintf(stderr, "%s:%i error: index out of the range\n", __FILE__, __LINE__), \
      exit(1), \
      ((type*)sp.ptr) \
@@ -61,7 +61,8 @@ typedef struct {
     fprintf(stderr,"%s:%i error: use after free\n", __FILE__, __LINE__), \
     exit(1), \
     ((type*)sp.ptr) \
-  : (((type*)sp.ptr)+ind))) \
+  : (((type*)sp.ptr)+ind)) \
+) 
 
 #define sptr_free(sp) \
   do { \
