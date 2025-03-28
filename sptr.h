@@ -27,21 +27,53 @@
 #define sptr_mat(type, sp, i, j) sptr_at(int, sptr_at(sptr, sp, i), j)
 
 #ifdef RELEASE_MODE
+
 typedef struct { void* ptr; int size;} sptr;
 #define sptr_alloc(type, size) ((sptr){malloc(sizeof(type)*size),size})
 #define sptr_at(type, sp, ind) (*(((type*)sp.ptr)+ind))
 #define sptr_free(sp) free(sp.ptr)
+
 #else
-typedef struct { void* ptr; size_t size; char isf; } sptr;
+
+typedef struct {
+  void* ptr; 
+  size_t size; 
+  char *isf; 
+} sptr;
+
 #define sptr_alloc(type, size) ({ \
-    void* p = malloc(sizeof(type) * size); \
-    if (!p) { fprintf(stderr, "%s:%d error: memory allocation failed\n", __FILE__, __LINE__); exit(1); } \
-    (sptr){p, size, 0}; \
-})
+    void *p = malloc(sizeof(type) * size); \
+    char *isf = malloc(sizeof(char)); \
+    *isf = 0; \
+    if (!p) { \
+      fprintf(stderr, "%s:%d error: memory allocation failed\n", __FILE__, __LINE__); \
+      exit(1); \
+    } \
+    (sptr){p, size, isf}; \
+}) 
+
 #define sptr_at(type, sp, ind) \
-  (*((ind>=sp.size||ind<0)?fprintf(stderr,"%s:%i error: index out of the range\n",__FILE__,__LINE__),exit(1),((type*)sp.ptr):(sp.isf)?fprintf(stderr,"%s:%i error: use after free\n",__FILE__,__LINE__),exit(1),((type*)sp.ptr):(((type*)sp.ptr)+ind)))
+  (*((ind>=sp.size||ind<0) ? \
+     fprintf(stderr, "%s:%i error: index out of the range\n", __FILE__, __LINE__), \
+     exit(1), \
+     ((type*)sp.ptr) \
+  : (*sp.isf) ? \
+    fprintf(stderr,"%s:%i error: use after free\n", __FILE__, __LINE__), \
+    exit(1), \
+    ((type*)sp.ptr) \
+  : (((type*)sp.ptr)+ind))) \
+
 #define sptr_free(sp) \
-  do{if(sp.isf){fprintf(stderr,"%s:%i error: double free\n",__FILE__,__LINE__);exit(1);}sp.isf = 1;free(sp.ptr);}while(0)
+  do { \
+    if(*sp.isf){ \
+      fprintf(stderr, "%s:%i error: double free\n", __FILE__, __LINE__); \
+      exit(1); \
+    } \
+    (*sp.isf) = 1; \
+    free(sp.ptr); \
+    free(sp.isf); \
+  } while(0)
+
 #endif
 
 #endif
